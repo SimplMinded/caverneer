@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.13)
 
 project(caverneer)
 
@@ -12,6 +12,16 @@ message(STATUS "Building in ${CMAKE_BUILD_TYPE} mode")
 
 if(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang" OR
    CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    # Disable exceptions
+    add_compile_options(-fno-exceptions)
+    add_link_options(-fno-exceptions)
+    message(STATUS "Disabled exception handling")
+    
+    # Disable rtti
+    add_compile_options(-fno-rtti)
+    add_link_options(-fno-rtti)
+    message(STATUS "Disabled rtti")
+    
     add_compile_options(-Wall)
 else()
     message(FATAL_ERROR "Unsupported compiler: ${CMAKE_CXX_COMPILER_ID}")
