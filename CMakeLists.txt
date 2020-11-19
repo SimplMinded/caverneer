@@ -31,4 +31,7 @@ else()
     message(FATAL_ERROR "Unsupported compiler: ${CMAKE_CXX_COMPILER_ID}")
 endif()
 
+add_subdirectory(core)
+
 add_subdirectory(game)
+add_subdirectory(sandbox)
