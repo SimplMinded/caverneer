@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.13)
 
+message(STATUS "Configuring vendor libraries")
+add_subdirectory(vendor)
+
 project(caverneer)
+message(STATUS "Configuring main project")
 
 set(CMAKE_CXX_STANDARD 17)
 message(STATUS "Using C++${CMAKE_CXX_STANDARD}")
