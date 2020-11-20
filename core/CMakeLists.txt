@@ -1,6 +1,7 @@
 include_directories(src)
 
 add_library(core STATIC
+    src/debug/assert.cpp
     src/debug/terminal.cpp
     src/math/util.cpp
     src/window.cpp)
