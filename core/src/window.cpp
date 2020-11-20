@@ -4,12 +4,18 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
+#include "core/debug/assert.h"
+
 namespace caverneer {
 
 static GLFWwindow* window = nullptr;
 
 bool createWindow(uint32_t width, uint32_t height, const char* title)
 {
+    ASSERT(width <= uint32_t(INT32_MAX));
+    ASSERT(height <= uint32_t(INT32_MAX));
+    ASSERT(title != nullptr);
+
     if (!glfwInit())
     {
         return false;
@@ -42,11 +48,15 @@ bool createWindow(uint32_t width, uint32_t height, const char* title)
 
 void destroyWindow()
 {
+    ASSERT(window != nullptr);
+
     glfwTerminate();
 }
 
 void updateWindow()
 {
+    ASSERT(window != nullptr);
+
     glClear(GL_COLOR_BUFFER_BIT);
     glfwSwapBuffers(window);
     glfwPollEvents();
@@ -54,6 +64,8 @@ void updateWindow()
 
 bool shouldWindowClose()
 {
+    ASSERT(window != nullptr);
+
     return glfwWindowShouldClose(window);
 }
 
