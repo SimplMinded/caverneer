@@ -14,6 +14,9 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 message(STATUS "Building in ${CMAKE_BUILD_TYPE} mode")
 
+message(STATUS "Configuring tests")
+add_subdirectory(test)
+
 if(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang" OR
    CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     # Disable exceptions

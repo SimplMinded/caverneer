@@ -1,0 +1,13 @@
+add_executable(test_core
+    src/math/test_max.cpp
+    src/math/test_min.cpp)
+
+target_link_libraries(test_core
+    PRIVATE core
+            catch)
+
+add_test(NAME test_core COMMAND test_core)
+
+add_custom_target(run_test_core
+    COMMAND ctest
+    DEPENDS test_core)

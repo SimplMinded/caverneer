@@ -1,6 +1,8 @@
 include_directories(src)
 
-add_library(core STATIC src/window.cpp)
+add_library(core STATIC
+    src/math/util.cpp
+    src/window.cpp)
 
 target_include_directories(core
     PUBLIC include)
