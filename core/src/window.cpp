@@ -5,12 +5,13 @@
 #include <GLFW/glfw3.h>
 
 #include "core/debug/assert.h"
+#include "core/util/error.h"
 
 namespace caverneer {
 
 static GLFWwindow* window = nullptr;
 
-bool createWindow(uint32_t width, uint32_t height, const char* title)
+Error createWindow(uint32_t width, uint32_t height, const char* title)
 {
     ASSERT(width <= uint32_t(INT32_MAX));
     ASSERT(height <= uint32_t(INT32_MAX));
@@ -18,7 +19,7 @@ bool createWindow(uint32_t width, uint32_t height, const char* title)
 
     if (!glfwInit())
     {
-        return false;
+        return makeError("Failed to initialize GLFW");
     }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -33,17 +34,17 @@ bool createWindow(uint32_t width, uint32_t height, const char* title)
     if (window == nullptr)
     {
         glfwTerminate();
-        return false;
+        return makeError("Failed to create window");
     }
 
     glfwMakeContextCurrent(window);
     if (!gladLoadGLLoader(GLADloadproc(glfwGetProcAddress)))
     {
         glfwTerminate();
-        return false;
+        return makeError("Failed to initialize GLAD");;
     }
 
-    return true;
+    return makeSuccess();
 }
 
 void destroyWindow()

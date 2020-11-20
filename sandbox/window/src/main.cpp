@@ -3,15 +3,17 @@
 #include <glad/glad.h>
 
 #include <core/debug/terminal.h>
+#include <core/util/error.h>
 #include <core/window.h>
 
 using namespace caverneer;
 
 int main()
 {
-    if (!createWindow(720, 480, "Hello, World!"))
+    const Error error = createWindow(720, 480, "Hello, World!");
+    if (isError(error))
     {
-        debugPrint("Window creation failed!");
+        debugPrint(error.message);
         return 1;
     }
 

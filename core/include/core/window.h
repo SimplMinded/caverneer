@@ -4,7 +4,9 @@
 
 namespace caverneer {
 
-bool createWindow(uint32_t width, uint32_t height, const char* title);
+struct Error;
+
+Error createWindow(uint32_t width, uint32_t height, const char* title);
 void destroyWindow();
 
 void updateWindow();
