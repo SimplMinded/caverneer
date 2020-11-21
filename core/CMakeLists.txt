@@ -5,6 +5,7 @@ add_library(core STATIC
     src/debug/terminal.cpp
     src/math/util.cpp
     src/util/error.cpp
+    src/util/unreachable.cpp
     src/window.cpp)
 
 target_include_directories(core
