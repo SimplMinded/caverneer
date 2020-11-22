@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cstddef>
+#include <cstdint>
 
 namespace caverneer {
 
@@ -9,8 +9,8 @@ struct Vector
     float x;
     float y;
 
-    float& operator [](size_t index);
-    float operator [](size_t index) const;
+    float& operator [](uint32_t index);
+    float operator [](uint32_t index) const;
 };
 
 const Vector VECTOR_ZERO = Vector{ 0, 0 };

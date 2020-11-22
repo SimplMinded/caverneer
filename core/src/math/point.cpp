@@ -6,7 +6,7 @@
 
 namespace caverneer {
 
-float& Point::operator [](size_t index)
+float& Point::operator [](uint32_t index)
 {
     switch (index)
     {
@@ -16,7 +16,7 @@ float& Point::operator [](size_t index)
     }
 }
 
-float Point::operator [](size_t index) const
+float Point::operator [](uint32_t index) const
 {
     switch (index)
     {

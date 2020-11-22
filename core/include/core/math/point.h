@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cstddef>
+#include <cstdint>
 
 namespace caverneer {
 
@@ -11,8 +11,8 @@ struct Point
     float x;
     float y;
 
-    float& operator [](size_t index);
-    float operator [](size_t index) const;
+    float& operator [](uint32_t index);
+    float operator [](uint32_t index) const;
 };
 
 const Point POINT_ZERO = Point{ 0, 0 };

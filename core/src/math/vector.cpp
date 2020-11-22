@@ -7,7 +7,7 @@
 
 namespace caverneer {
 
-float& Vector::operator [](size_t index)
+float& Vector::operator [](uint32_t index)
 {
     switch (index)
     {
@@ -17,7 +17,7 @@ float& Vector::operator [](size_t index)
     }
 }
 
-float Vector::operator [](size_t index) const
+float Vector::operator [](uint32_t index) const
 {
     switch (index)
     {
