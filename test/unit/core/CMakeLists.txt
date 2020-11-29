@@ -1,4 +1,5 @@
 add_executable(test_core
+    src/math/test_matrix.cpp
     src/math/test_max.cpp
     src/math/test_min.cpp
     src/math/test_point.cpp
