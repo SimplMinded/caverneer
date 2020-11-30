@@ -58,7 +58,6 @@ void updateWindow()
 {
     ASSERT(window != nullptr);
 
-    glClear(GL_COLOR_BUFFER_BIT);
     glfwSwapBuffers(window);
     glfwPollEvents();
 }
