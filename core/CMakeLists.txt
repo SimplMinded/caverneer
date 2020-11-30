@@ -5,6 +5,7 @@ add_library(core STATIC
     src/debug/terminal.cpp
     src/graphics/color.cpp
     src/graphics/rect.cpp
+    src/graphics/renderer.cpp
     src/math/matrix.cpp
     src/math/point.cpp
     src/math/util.cpp
