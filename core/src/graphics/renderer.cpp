@@ -37,6 +37,7 @@ uint32_t createShader(uint32_t type, const char* source)
 
 uint32_t vao;
 uint32_t vbo;
+uint32_t ibo;
 uint32_t program;
 
 } // namespace
@@ -51,6 +52,9 @@ void initRenderer()
 
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
+
+    glGenBuffers(1, &ibo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 
     const uint32_t vertexShader = createShader(GL_VERTEX_SHADER, vertex_shader);
     const uint32_t fragmentShader = createShader(GL_FRAGMENT_SHADER, fragment_shader);
@@ -68,6 +72,9 @@ void initRenderer()
          0.5f, -0.5f
     };
     glBufferData(GL_ARRAY_BUFFER, 3 * 2 * sizeof(float), vertices, GL_STATIC_DRAW);
+
+    const uint32_t indices[3] = { 0, 1, 2 };
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3 * sizeof(uint32_t), indices, GL_STATIC_DRAW);
 }
 
 void destroyRenderer()
@@ -78,7 +85,7 @@ void destroyRenderer()
 
 void render()
 {
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 }
 
 } // namespace caverneer
