@@ -22,7 +22,10 @@ int main()
     while (!shouldWindowClose())
     {
         glClear(GL_COLOR_BUFFER_BIT);
-        drawQuad(makeRect(-0.5f, -0.5f, 1.0f, 1.0f));
+        beginRendering();
+        drawQuad(makeRect(-0.5f, -0.5f, 0.5f, 0.5f));
+        drawQuad(makeRect(0.0f, 0.0f, 0.5f, 0.5f));
+        endRendering();
         updateWindow();
     }
 

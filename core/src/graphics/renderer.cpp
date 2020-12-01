@@ -42,6 +42,17 @@ uint32_t vbo;
 uint32_t ibo;
 uint32_t program;
 
+struct Vertex
+{
+    float x;
+    float y;
+};
+
+constexpr uint32_t max_sprite_count = 10000;
+
+Vertex vertices[4 * max_sprite_count];
+uint32_t spriteCount;
+
 } // namespace
 
 void initRenderer()
@@ -68,13 +79,20 @@ void initRenderer()
     glDeleteShader(fragmentShader);
     glUseProgram(program);
 
-    glBufferData(GL_ARRAY_BUFFER, 4 * 2 * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 4 * max_sprite_count * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);
 
-    const uint32_t indices[6] = {
-        0, 1, 2,
-        0, 2, 3
-    };
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(uint32_t), indices, GL_STATIC_DRAW);
+    uint32_t* indices = new uint32_t[6 * max_sprite_count];
+    for (uint32_t i = 0; i < max_sprite_count; i++)
+    {
+        indices[(i * 6) + 0] = (i * 4) + 0;
+        indices[(i * 6) + 1] = (i * 4) + 1;
+        indices[(i * 6) + 2] = (i * 4) + 2;
+        indices[(i * 6) + 3] = (i * 4) + 0;
+        indices[(i * 6) + 4] = (i * 4) + 2;
+        indices[(i * 6) + 5] = (i * 4) + 3;
+    }
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * max_sprite_count * sizeof(uint32_t), indices, GL_STATIC_DRAW);
+    delete[] indices;
 }
 
 void destroyRenderer()
@@ -83,20 +101,28 @@ void destroyRenderer()
     glDeleteVertexArrays(1, &vao);
 }
 
+void beginRendering()
+{
+    spriteCount = 0;
+}
+
+void endRendering()
+{
+    glBufferSubData(GL_ARRAY_BUFFER, 0, 4 * spriteCount * sizeof(Vertex), vertices);
+    glDrawElements(GL_TRIANGLES, 6 * spriteCount, GL_UNSIGNED_INT, 0);
+}
+
 void drawQuad(const Rect& rect)
 {
     const float x1 = rect.x;
     const float x2 = rect.x + rect.width;
     const float y1 = rect.y;
     const float y2 = rect.y + rect.height;
-    const float vertices[4 * 2] = {
-        x1, y1,
-        x1, y2,
-        x2, y2,
-        x2, y1
-    };
-    glBufferSubData(GL_ARRAY_BUFFER, 0, 4 * 2 * sizeof(float), vertices);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    vertices[(spriteCount * 4) + 0] = Vertex{ x1, y1 };
+    vertices[(spriteCount * 4) + 1] = Vertex{ x1, y2 };
+    vertices[(spriteCount * 4) + 2] = Vertex{ x2, y2 };
+    vertices[(spriteCount * 4) + 3] = Vertex{ x2, y1 };
+    spriteCount++;
 }
 
 } // namespace caverneer
