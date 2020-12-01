@@ -1,10 +1,13 @@
 #include "core/graphics/renderer.h"
 
+#include <cstddef>
 #include <cstdint>
 
 #include <glad/glad.h>
 
+#include "core/graphics/color.h"
 #include "core/graphics/rect.h"
+#include "core/math/point.h"
 
 namespace caverneer {
 
@@ -14,18 +17,24 @@ constexpr const char* vertex_shader =
     "#version 400\n"
     "\n"
     "layout(location=0) in vec4 in_position;\n"
+    "layout(location=1) in vec4 in_color;\n"
+    "\n"
+    "out vec4 vert_color;\n"
     "\n"
     "void main() {\n"
     "    gl_Position = in_position;\n"
+    "    vert_color = in_color;\n"
     "}\n";
 
 constexpr const char* fragment_shader =
     "#version 400\n"
     "\n"
+    "in vec4 vert_color;\n"
+    "\n"
     "out vec4 frag_color;\n"
     "\n"
     "void main() {\n"
-    "    frag_color = vec4(1, 1, 1, 1);\n"
+    "    frag_color = vert_color;\n"
     "}\n";
 
 uint32_t createShader(uint32_t type, const char* source)
@@ -44,8 +53,8 @@ uint32_t program;
 
 struct Vertex
 {
-    float x;
-    float y;
+    Point position;
+    Color color;
 };
 
 constexpr uint32_t max_sprite_count = 10000;
@@ -64,7 +73,10 @@ void initRenderer()
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, position)));
+
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, color)));
 
     glGenBuffers(1, &ibo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
@@ -112,17 +124,22 @@ void endRendering()
     glDrawElements(GL_TRIANGLES, 6 * spriteCount, GL_UNSIGNED_INT, 0);
 }
 
-void drawQuad(const Rect& rect)
+void drawQuad(const Rect& rect, const Color& color)
 {
     const float x1 = rect.x;
     const float x2 = rect.x + rect.width;
     const float y1 = rect.y;
     const float y2 = rect.y + rect.height;
-    vertices[(spriteCount * 4) + 0] = Vertex{ x1, y1 };
-    vertices[(spriteCount * 4) + 1] = Vertex{ x1, y2 };
-    vertices[(spriteCount * 4) + 2] = Vertex{ x2, y2 };
-    vertices[(spriteCount * 4) + 3] = Vertex{ x2, y1 };
+    vertices[(spriteCount * 4) + 0] = Vertex{ makePoint(x1, y1), color };
+    vertices[(spriteCount * 4) + 1] = Vertex{ makePoint(x1, y2), color };
+    vertices[(spriteCount * 4) + 2] = Vertex{ makePoint(x2, y2), color };
+    vertices[(spriteCount * 4) + 3] = Vertex{ makePoint(x2, y1), color };
     spriteCount++;
+}
+
+void drawQuad(const Rect& rect)
+{
+    drawQuad(rect, COLOR_WHITE);
 }
 
 } // namespace caverneer
