@@ -4,6 +4,8 @@
 
 #include <glad/glad.h>
 
+#include "core/graphics/rect.h"
+
 namespace caverneer {
 
 namespace {
@@ -66,10 +68,13 @@ void initRenderer()
     glDeleteShader(fragmentShader);
     glUseProgram(program);
 
-    glBufferData(GL_ARRAY_BUFFER, 3 * 2 * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 4 * 2 * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
 
-    const uint32_t indices[3] = { 0, 1, 2 };
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3 * sizeof(uint32_t), indices, GL_STATIC_DRAW);
+    const uint32_t indices[6] = {
+        0, 1, 2,
+        0, 2, 3
+    };
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(uint32_t), indices, GL_STATIC_DRAW);
 }
 
 void destroyRenderer()
@@ -78,15 +83,20 @@ void destroyRenderer()
     glDeleteVertexArrays(1, &vao);
 }
 
-void render()
+void drawQuad(const Rect& rect)
 {
-    const float vertices[3 * 2] = {
-        -0.5f, -0.5f,
-         0.0f,  0.5f,
-         0.5f, -0.5f
+    const float x1 = rect.x;
+    const float x2 = rect.x + rect.width;
+    const float y1 = rect.y;
+    const float y2 = rect.y + rect.height;
+    const float vertices[4 * 2] = {
+        x1, y1,
+        x1, y2,
+        x2, y2,
+        x2, y1
     };
-    glBufferSubData(GL_ARRAY_BUFFER, 0, 3 * 2 * sizeof(float), vertices);
-    glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, 4 * 2 * sizeof(float), vertices);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
 } // namespace caverneer

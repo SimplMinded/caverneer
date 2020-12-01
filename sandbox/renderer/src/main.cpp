@@ -1,6 +1,7 @@
 #include <glad/glad.h>
 
 #include <core/debug/terminal.h>
+#include <core/graphics/rect.h>
 #include <core/graphics/renderer.h>
 #include <core/util/error.h>
 #include <core/window.h>
@@ -21,7 +22,7 @@ int main()
     while (!shouldWindowClose())
     {
         glClear(GL_COLOR_BUFFER_BIT);
-        render();
+        drawQuad(makeRect(-0.5f, -0.5f, 1.0f, 1.0f));
         updateWindow();
     }
 

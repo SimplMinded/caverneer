@@ -2,9 +2,11 @@
 
 namespace caverneer {
 
+struct Rect;
+
 void initRenderer();
 void destroyRenderer();
 
-void render();
+void drawQuad(const Rect& rect);
 
 } // namespace caverneer
