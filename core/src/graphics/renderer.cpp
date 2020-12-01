@@ -66,12 +66,7 @@ void initRenderer()
     glDeleteShader(fragmentShader);
     glUseProgram(program);
 
-    const float vertices[3 * 2] = {
-        -0.5f, -0.5f,
-         0.0f,  0.5f,
-         0.5f, -0.5f
-    };
-    glBufferData(GL_ARRAY_BUFFER, 3 * 2 * sizeof(float), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 3 * 2 * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
 
     const uint32_t indices[3] = { 0, 1, 2 };
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3 * sizeof(uint32_t), indices, GL_STATIC_DRAW);
@@ -85,6 +80,12 @@ void destroyRenderer()
 
 void render()
 {
+    const float vertices[3 * 2] = {
+        -0.5f, -0.5f,
+         0.0f,  0.5f,
+         0.5f, -0.5f
+    };
+    glBufferSubData(GL_ARRAY_BUFFER, 0, 3 * 2 * sizeof(float), vertices);
     glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 }
 
