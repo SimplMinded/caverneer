@@ -2,8 +2,10 @@
 
 #include <core/debug/terminal.h>
 #include <core/graphics/color.h>
+#include <core/graphics/projection.h>
 #include <core/graphics/rect.h>
 #include <core/graphics/renderer.h>
+#include <core/math/matrix.h>
 #include <core/util/error.h>
 #include <core/window.h>
 
@@ -19,13 +21,19 @@ int main()
     }
 
     initRenderer();
+    const Matrix projection = makeOrthogonalProjectionMatrix(0,
+                                                             720,
+                                                             0,
+                                                             480,
+                                                             -1,
+                                                             1);
 
     while (!shouldWindowClose())
     {
         glClear(GL_COLOR_BUFFER_BIT);
-        beginRendering();
-        drawQuad(makeRect(-0.5f, -0.5f, 0.5f, 0.5f));
-        drawQuad(makeRect(0.0f, 0.0f, 0.5f, 0.5f), COLOR_MAGENTA);
+        beginRendering(projection);
+        drawQuad(makeRect(100, 100, 50, 50));
+        drawQuad(makeRect(150, 150, 200, 200), COLOR_MAGENTA);
         endRendering();
         updateWindow();
     }

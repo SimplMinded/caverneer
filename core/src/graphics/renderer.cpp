@@ -7,6 +7,7 @@
 
 #include "core/graphics/color.h"
 #include "core/graphics/rect.h"
+#include "core/math/matrix.h"
 #include "core/math/point.h"
 
 namespace caverneer {
@@ -19,10 +20,12 @@ constexpr const char* vertex_shader =
     "layout(location=0) in vec4 in_position;\n"
     "layout(location=1) in vec4 in_color;\n"
     "\n"
+    "uniform mat4 u_viewProjection;\n"
+    "\n"
     "out vec4 vert_color;\n"
     "\n"
     "void main() {\n"
-    "    gl_Position = in_position;\n"
+    "    gl_Position = u_viewProjection * in_position;\n"
     "    vert_color = in_color;\n"
     "}\n";
 
@@ -50,6 +53,8 @@ uint32_t vao;
 uint32_t vbo;
 uint32_t ibo;
 uint32_t program;
+
+int32_t vpLocation;
 
 struct Vertex
 {
@@ -105,6 +110,8 @@ void initRenderer()
     }
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * max_sprite_count * sizeof(uint32_t), indices, GL_STATIC_DRAW);
     delete[] indices;
+
+    vpLocation = glGetUniformLocation(program, "u_viewProjection");
 }
 
 void destroyRenderer()
@@ -113,8 +120,10 @@ void destroyRenderer()
     glDeleteVertexArrays(1, &vao);
 }
 
-void beginRendering()
+void beginRendering(const Matrix& viewProjection)
 {
+    glUniformMatrix4fv(vpLocation, 1, GL_FALSE, viewProjection.elems);
+
     spriteCount = 0;
 }
 
