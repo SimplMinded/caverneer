@@ -22,6 +22,10 @@ union Matrix
     float at(uint32_t row, uint32_t column) const;
 };
 
+const Matrix MATRIX_ZERO = Matrix{{ 0, 0, 0, 0,
+                                    0, 0, 0, 0,
+                                    0, 0, 0, 0,
+                                    0, 0, 0, 0 }};
 const Matrix MATRIX_IDENTITY = Matrix{{ 1, 0, 0, 0,
                                         0, 1, 0, 0,
                                         0, 0, 1, 0,
