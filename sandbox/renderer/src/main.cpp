@@ -1,5 +1,3 @@
-#include <glad/glad.h>
-
 #include <core/debug/terminal.h>
 #include <core/graphics/color.h>
 #include <core/graphics/projection.h>
@@ -35,14 +33,12 @@ int main()
 
     while (!shouldWindowClose())
     {
-        glClear(GL_COLOR_BUFFER_BIT);
         beginRendering();
         enterView(view);
         drawQuad(makeRect(100, 100, 50, 50));
         exitView();
         drawQuad(makeRect(150, 150, 200, 200), COLOR_MAGENTA);
         endRendering();
-        updateWindow();
     }
 
     destroyRenderer();

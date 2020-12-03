@@ -10,6 +10,7 @@
 #include "core/graphics/rect.h"
 #include "core/math/matrix.h"
 #include "core/math/point.h"
+#include "core/window.h"
 
 namespace caverneer {
 
@@ -147,12 +148,16 @@ void destroyRenderer()
 void beginRendering()
 {
     spriteCount = 0;
+
+    glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void endRendering()
 {
     glBufferSubData(GL_ARRAY_BUFFER, 0, 4 * spriteCount * sizeof(Vertex), vertices);
     glDrawElements(GL_TRIANGLES, 6 * spriteCount, GL_UNSIGNED_INT, 0);
+
+    updateWindow();
 }
 
 void enterView(const Matrix& view)
