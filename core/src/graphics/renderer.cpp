@@ -12,6 +12,8 @@
 #include "core/math/point.h"
 #include "core/window.h"
 
+#include "graphics/gl_assert.h"
+
 namespace caverneer {
 
 namespace {
@@ -44,9 +46,9 @@ constexpr const char* fragment_shader =
 
 uint32_t createShader(uint32_t type, const char* source)
 {
-    const uint32_t shader = glCreateShader(type);
-    glShaderSource(shader, 1, &source, nullptr);
-    glCompileShader(shader);
+    GL_ASSERT(const uint32_t shader = glCreateShader(type));
+    GL_ASSERT(glShaderSource(shader, 1, &source, nullptr));
+    GL_ASSERT(glCompileShader(shader));
 
     return shader;
 }
@@ -80,32 +82,49 @@ void initRenderer(const Matrix& projection)
     ASSERT(ibo == 0);
     ASSERT(program == 0);
 
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
+    GL_ASSERT(glGenVertexArrays(1, &vao));
+    GL_ASSERT(glBindVertexArray(vao));
 
-    glGenBuffers(1, &vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    GL_ASSERT(glGenBuffers(1, &vbo));
+    GL_ASSERT(glBindBuffer(GL_ARRAY_BUFFER, vbo));
 
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, position)));
+    GL_ASSERT(glEnableVertexAttribArray(0));
+    GL_ASSERT(glVertexAttribPointer(0,
+                                    2,
+                                    GL_FLOAT,
+                                    GL_FALSE,
+                                    sizeof(Vertex),
+                                    reinterpret_cast<void*>(
+                                        offsetof(Vertex, position))));
 
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, color)));
+    GL_ASSERT(glEnableVertexAttribArray(1));
+    GL_ASSERT(glVertexAttribPointer(1,
+                                    4,
+                                    GL_FLOAT,
+                                    GL_FALSE,
+                                    sizeof(Vertex),
+                                    reinterpret_cast<void*>(
+                                        offsetof(Vertex, color))));
 
-    glGenBuffers(1, &ibo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    GL_ASSERT(glGenBuffers(1, &ibo));
+    GL_ASSERT(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
 
-    const uint32_t vertexShader = createShader(GL_VERTEX_SHADER, vertex_shader);
-    const uint32_t fragmentShader = createShader(GL_FRAGMENT_SHADER, fragment_shader);
-    program = glCreateProgram();
-    glAttachShader(program, vertexShader);
-    glAttachShader(program, fragmentShader);
-    glLinkProgram(program);
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-    glUseProgram(program);
+    const uint32_t vertexShader =
+        createShader(GL_VERTEX_SHADER, vertex_shader);
+    const uint32_t fragmentShader =
+        createShader(GL_FRAGMENT_SHADER, fragment_shader);
+    GL_ASSERT(program = glCreateProgram());
+    GL_ASSERT(glAttachShader(program, vertexShader));
+    GL_ASSERT(glAttachShader(program, fragmentShader));
+    GL_ASSERT(glLinkProgram(program));
+    GL_ASSERT(glDeleteShader(vertexShader));
+    GL_ASSERT(glDeleteShader(fragmentShader));
+    GL_ASSERT(glUseProgram(program));
 
-    glBufferData(GL_ARRAY_BUFFER, 4 * max_sprite_count * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);
+    GL_ASSERT(glBufferData(GL_ARRAY_BUFFER,
+                           4 * max_sprite_count * sizeof(Vertex),
+                           nullptr,
+                           GL_DYNAMIC_DRAW));
 
     uint32_t* indices = new uint32_t[6 * max_sprite_count];
     for (uint32_t i = 0; i < max_sprite_count; i++)
@@ -117,12 +136,18 @@ void initRenderer(const Matrix& projection)
         indices[(i * 6) + 4] = (i * 4) + 2;
         indices[(i * 6) + 5] = (i * 4) + 3;
     }
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * max_sprite_count * sizeof(uint32_t), indices, GL_STATIC_DRAW);
+    GL_ASSERT(glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                           6 * max_sprite_count * sizeof(uint32_t),
+                           indices,
+                           GL_STATIC_DRAW));
     delete[] indices;
 
-    const int32_t projectionLocation =
-        glGetUniformLocation(program, "u_projection");
-    glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, projection.elems);
+    GL_ASSERT(const int32_t projectionLocation =
+        glGetUniformLocation(program, "u_projection"));
+    GL_ASSERT(glUniformMatrix4fv(projectionLocation,
+                                 1,
+                                 GL_FALSE,
+                                 projection.elems));
 
     viewTransform = MATRIX_IDENTITY;
 }
@@ -134,10 +159,10 @@ void destroyRenderer()
     ASSERT(ibo != 0);
     ASSERT(program != 0);
 
-    glDeleteProgram(program);
-    glDeleteBuffers(1, &ibo);
-    glDeleteBuffers(1, &vbo);
-    glDeleteVertexArrays(1, &vao);
+    GL_ASSERT(glDeleteProgram(program));
+    GL_ASSERT(glDeleteBuffers(1, &ibo));
+    GL_ASSERT(glDeleteBuffers(1, &vbo));
+    GL_ASSERT(glDeleteVertexArrays(1, &vao));
 
     vao = 0;
     vbo = 0;
@@ -149,13 +174,19 @@ void beginRendering()
 {
     spriteCount = 0;
 
-    glClear(GL_COLOR_BUFFER_BIT);
+    GL_ASSERT(glClear(GL_COLOR_BUFFER_BIT));
 }
 
 void endRendering()
 {
-    glBufferSubData(GL_ARRAY_BUFFER, 0, 4 * spriteCount * sizeof(Vertex), vertices);
-    glDrawElements(GL_TRIANGLES, 6 * spriteCount, GL_UNSIGNED_INT, 0);
+    GL_ASSERT(glBufferSubData(GL_ARRAY_BUFFER,
+                              0,
+                              4 * spriteCount * sizeof(Vertex),
+                              vertices));
+    GL_ASSERT(glDrawElements(GL_TRIANGLES,
+                             6 * spriteCount,
+                             GL_UNSIGNED_INT,
+                             0));
 
     updateWindow();
 }
