@@ -2,14 +2,17 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <cstdlib>
 
 #include <glad/glad.h>
 
 #include "core/debug/assert.h"
+#include "core/debug/terminal.h"
 #include "core/graphics/color.h"
 #include "core/graphics/rect.h"
 #include "core/math/matrix.h"
 #include "core/math/point.h"
+#include "core/util/unreachable.h"
 #include "core/window.h"
 
 #include "graphics/gl_assert.h"
@@ -44,13 +47,59 @@ constexpr const char* fragment_shader =
     "    frag_color = vert_color;\n"
     "}\n";
 
+constexpr uint32_t max_log_length = 1024;
+
+const char* getShaderTypeName(uint32_t type)
+{
+    switch (type)
+    {
+        case GL_VERTEX_SHADER:
+            return "VERTEX";
+        case GL_FRAGMENT_SHADER:
+            return "FRAGMENT";
+        default:
+            UNREACHABLE("Unknown shader type: %u", type);
+    }
+}
+
+void verifyShaderCompilation(uint32_t type, uint32_t shader)
+{
+    int32_t status;
+    GL_ASSERT(glGetShaderiv(shader, GL_COMPILE_STATUS, &status));
+    if (status != GL_TRUE)
+    {
+        int32_t logLength = 0;
+        char message[max_log_length] = {};
+        GL_ASSERT(glGetShaderInfoLog(shader,
+                                     max_log_length,
+                                     &logLength,
+                                     message));
+        debugPrint("[SHADER_COMPILATION] %s: %s",
+                   getShaderTypeName(type),
+                   message);
+        abort();
+    }
+}
+
 uint32_t createShader(uint32_t type, const char* source)
 {
     GL_ASSERT(const uint32_t shader = glCreateShader(type));
     GL_ASSERT(glShaderSource(shader, 1, &source, nullptr));
     GL_ASSERT(glCompileShader(shader));
 
+    verifyShaderCompilation(type, shader);
+
     return shader;
+}
+
+uint32_t createShaderProgram(uint32_t vertexShader, uint32_t fragmentShader)
+{
+    GL_ASSERT(const uint32_t program = glCreateProgram());
+    GL_ASSERT(glAttachShader(program, vertexShader));
+    GL_ASSERT(glAttachShader(program, fragmentShader));
+    GL_ASSERT(glLinkProgram(program));
+
+    return program;
 }
 
 uint32_t vao;
@@ -113,10 +162,7 @@ void initRenderer(const Matrix& projection)
         createShader(GL_VERTEX_SHADER, vertex_shader);
     const uint32_t fragmentShader =
         createShader(GL_FRAGMENT_SHADER, fragment_shader);
-    GL_ASSERT(program = glCreateProgram());
-    GL_ASSERT(glAttachShader(program, vertexShader));
-    GL_ASSERT(glAttachShader(program, fragmentShader));
-    GL_ASSERT(glLinkProgram(program));
+    program = createShaderProgram(vertexShader, fragmentShader);
     GL_ASSERT(glDeleteShader(vertexShader));
     GL_ASSERT(glDeleteShader(fragmentShader));
     GL_ASSERT(glUseProgram(program));
