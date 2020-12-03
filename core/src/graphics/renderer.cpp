@@ -5,6 +5,7 @@
 
 #include <glad/glad.h>
 
+#include "core/debug/assert.h"
 #include "core/graphics/color.h"
 #include "core/graphics/rect.h"
 #include "core/math/matrix.h"
@@ -20,12 +21,12 @@ constexpr const char* vertex_shader =
     "layout(location=0) in vec4 in_position;\n"
     "layout(location=1) in vec4 in_color;\n"
     "\n"
-    "uniform mat4 u_viewProjection;\n"
+    "uniform mat4 u_projection;\n"
     "\n"
     "out vec4 vert_color;\n"
     "\n"
     "void main() {\n"
-    "    gl_Position = u_viewProjection * in_position;\n"
+    "    gl_Position = u_projection * in_position;\n"
     "    vert_color = in_color;\n"
     "}\n";
 
@@ -54,8 +55,6 @@ uint32_t vbo;
 uint32_t ibo;
 uint32_t program;
 
-int32_t vpLocation;
-
 struct Vertex
 {
     Point position;
@@ -67,10 +66,19 @@ constexpr uint32_t max_sprite_count = 10000;
 Vertex vertices[4 * max_sprite_count];
 uint32_t spriteCount;
 
+Matrix viewTransform;
+
 } // namespace
 
-void initRenderer()
+void initRenderer(const Matrix& projection)
 {
+    ASSERT(projection != MATRIX_ZERO);
+
+    ASSERT(vao == 0);
+    ASSERT(vbo == 0);
+    ASSERT(ibo == 0);
+    ASSERT(program == 0);
+
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
 
@@ -111,19 +119,33 @@ void initRenderer()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * max_sprite_count * sizeof(uint32_t), indices, GL_STATIC_DRAW);
     delete[] indices;
 
-    vpLocation = glGetUniformLocation(program, "u_viewProjection");
+    const int32_t projectionLocation =
+        glGetUniformLocation(program, "u_projection");
+    glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, projection.elems);
+
+    viewTransform = MATRIX_IDENTITY;
 }
 
 void destroyRenderer()
 {
+    ASSERT(vao != 0);
+    ASSERT(vbo != 0);
+    ASSERT(ibo != 0);
+    ASSERT(program != 0);
+
+    glDeleteProgram(program);
+    glDeleteBuffers(1, &ibo);
     glDeleteBuffers(1, &vbo);
     glDeleteVertexArrays(1, &vao);
+
+    vao = 0;
+    vbo = 0;
+    ibo = 0;
+    program = 0;
 }
 
-void beginRendering(const Matrix& viewProjection)
+void beginRendering()
 {
-    glUniformMatrix4fv(vpLocation, 1, GL_FALSE, viewProjection.elems);
-
     spriteCount = 0;
 }
 
@@ -133,16 +155,35 @@ void endRendering()
     glDrawElements(GL_TRIANGLES, 6 * spriteCount, GL_UNSIGNED_INT, 0);
 }
 
+void enterView(const Matrix& view)
+{
+    ASSERT(viewTransform == MATRIX_IDENTITY);
+
+    viewTransform = view;
+}
+
+void exitView()
+{
+    viewTransform = MATRIX_IDENTITY;
+}
+
 void drawQuad(const Rect& rect, const Color& color)
 {
     const float x1 = rect.x;
     const float x2 = rect.x + rect.width;
     const float y1 = rect.y;
     const float y2 = rect.y + rect.height;
-    vertices[(spriteCount * 4) + 0] = Vertex{ makePoint(x1, y1), color };
-    vertices[(spriteCount * 4) + 1] = Vertex{ makePoint(x1, y2), color };
-    vertices[(spriteCount * 4) + 2] = Vertex{ makePoint(x2, y2), color };
-    vertices[(spriteCount * 4) + 3] = Vertex{ makePoint(x2, y1), color };
+
+    const Point p1 = viewTransform * makePoint(x1, y1);
+    const Point p2 = viewTransform * makePoint(x1, y2);
+    const Point p3 = viewTransform * makePoint(x2, y2);
+    const Point p4 = viewTransform * makePoint(x2, y1);
+
+    vertices[(spriteCount * 4) + 0] = Vertex{ p1, color };
+    vertices[(spriteCount * 4) + 1] = Vertex{ p2, color };
+    vertices[(spriteCount * 4) + 2] = Vertex{ p3, color };
+    vertices[(spriteCount * 4) + 3] = Vertex{ p4, color };
+
     spriteCount++;
 }
 

@@ -20,19 +20,26 @@ int main()
         return 1;
     }
 
-    initRenderer();
     const Matrix projection = makeOrthogonalProjectionMatrix(0,
                                                              720,
                                                              0,
                                                              480,
                                                              -1,
                                                              1);
+    initRenderer(projection);
+
+    const Matrix view = makeMatrix(1, 0, 0, -50,
+                                   0, 1, 0, -50,
+                                   0, 0, 1,   0,
+                                   0, 0, 0,   1);
 
     while (!shouldWindowClose())
     {
         glClear(GL_COLOR_BUFFER_BIT);
-        beginRendering(projection);
+        beginRendering();
+        enterView(view);
         drawQuad(makeRect(100, 100, 50, 50));
+        exitView();
         drawQuad(makeRect(150, 150, 200, 200), COLOR_MAGENTA);
         endRendering();
         updateWindow();
