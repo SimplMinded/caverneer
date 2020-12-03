@@ -92,12 +92,31 @@ uint32_t createShader(uint32_t type, const char* source)
     return shader;
 }
 
+void verifyShaderProgramLinking(uint32_t program)
+{
+    int32_t status;
+    GL_ASSERT(glGetProgramiv(program, GL_LINK_STATUS, &status));
+    if (status != GL_TRUE)
+    {
+        int32_t logLength = 0;
+        char message[max_log_length] = {};
+        GL_ASSERT(glGetProgramInfoLog(program,
+                                      max_log_length,
+                                      &logLength,
+                                      message));
+        debugPrint("[PROGRAM LINKING] %s", message);
+        abort();
+    }
+}
+
 uint32_t createShaderProgram(uint32_t vertexShader, uint32_t fragmentShader)
 {
     GL_ASSERT(const uint32_t program = glCreateProgram());
     GL_ASSERT(glAttachShader(program, vertexShader));
     GL_ASSERT(glAttachShader(program, fragmentShader));
     GL_ASSERT(glLinkProgram(program));
+
+    verifyShaderProgramLinking(program);
 
     return program;
 }
