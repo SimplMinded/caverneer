@@ -10,6 +10,7 @@ add_library(core STATIC
     src/graphics/projection.cpp
     src/graphics/rect.cpp
     src/graphics/renderer.cpp
+    src/graphics/texture.cpp
     src/math/matrix.cpp
     src/math/point.cpp
     src/math/util.cpp
