@@ -5,6 +5,7 @@ add_library(core STATIC
     src/debug/terminal.cpp
     src/graphics/color.cpp
     src/graphics/gl_assert.cpp
+    src/graphics/image.cpp
     src/graphics/pixel.cpp
     src/graphics/projection.cpp
     src/graphics/rect.cpp
