@@ -1,6 +1,7 @@
 add_executable(test_core
     src/graphics/test_image.cpp
     src/graphics/test_pixel.cpp
+    src/graphics/test_texture_region.cpp
     src/math/test_matrix.cpp
     src/math/test_max.cpp
     src/math/test_min.cpp

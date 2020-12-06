@@ -11,6 +11,7 @@ add_library(core STATIC
     src/graphics/rect.cpp
     src/graphics/renderer.cpp
     src/graphics/texture.cpp
+    src/graphics/texture_region.cpp
     src/math/matrix.cpp
     src/math/point.cpp
     src/math/util.cpp
