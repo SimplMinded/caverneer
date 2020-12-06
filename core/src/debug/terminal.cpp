@@ -17,12 +17,13 @@ void debugPrint(const char* msg, ...)
 
     char buffer[debugPrintMaxLineLength];
     const int32_t writtenBytes =
-        vsnprintf(buffer, size_t(debugPrintMaxLineLength) - 1, msg, args);
+        vsnprintf(buffer, size_t(debugPrintMaxLineLength) - 2, msg, args);
 
     va_end(args);
 
-    const int32_t endIndex = min(writtenBytes, debugPrintMaxLineLength - 1);
-    buffer[endIndex] = '\n';
+    const int32_t endIndex = min(writtenBytes, debugPrintMaxLineLength - 2);
+    buffer[endIndex + 0] = '\n';
+    buffer[endIndex + 1] = '\0';
 
     printf("%s", buffer);
 }
