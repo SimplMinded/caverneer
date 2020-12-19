@@ -24,6 +24,17 @@ Spritesheet createSpritesheet(const Image& image,
     return makeSpritesheet(createTexture(image), spriteWidth, spriteHeight);
 }
 
+Spritesheet loadSpritesheet(const char* path,
+                            uint32_t spriteWidth,
+                            uint32_t spriteHeight)
+{
+    Image image = loadImage(path);
+    const Texture texture = createTexture(image);
+    deleteImage(image);
+
+    return makeSpritesheet(texture, spriteWidth, spriteHeight);
+}
+
 void deleteSpritesheet(Spritesheet& spritesheet)
 {
     deleteTexture(spritesheet.texture);

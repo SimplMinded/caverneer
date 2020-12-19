@@ -1,5 +1,7 @@
 #include "core/graphics/image.h"
 
+#include <stb_image.h>
+
 #include "core/debug/assert.h"
 #include "core/graphics/pixel.h"
 
@@ -10,6 +12,33 @@ Image makeImage(uint32_t width, uint32_t height, uint8_t* data)
     ASSERT(data != nullptr);
 
     return Image{ width, height, data };
+}
+
+Image loadImage(const char* path)
+{
+    ASSERT(path != nullptr);
+
+    stbi_set_flip_vertically_on_load(true);
+
+    int32_t width;
+    int32_t height;
+    int32_t channelCount;
+    uint8_t* data = stbi_load(path, &width, &height, &channelCount, 4);
+
+    return makeImage(uint32_t(width), uint32_t(height), data);
+}
+
+void deleteImage(Image& image)
+{
+    ASSERT(image.width > 0);
+    ASSERT(image.height > 0);
+    ASSERT(image.data != nullptr);
+
+    stbi_image_free(image.data);
+
+    image.width = 0;
+    image.height = 0;
+    image.data = nullptr;
 }
 
 Pixel getPixelAt(const Image& image, uint32_t x, uint32_t y)

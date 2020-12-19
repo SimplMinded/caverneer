@@ -5,6 +5,7 @@
 #include <core/graphics/projection.h>
 #include <core/graphics/rect.h>
 #include <core/graphics/renderer.h>
+#include <core/graphics/spritesheet.h>
 #include <core/graphics/texture.h>
 #include <core/graphics/texture_region.h>
 #include <core/math/matrix.h>

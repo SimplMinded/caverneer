@@ -4,6 +4,7 @@ add_library(core STATIC
     src/debug/assert.cpp
     src/debug/terminal.cpp
     src/graphics/color.cpp
+    src/graphics/font.cpp
     src/graphics/gl_assert.cpp
     src/graphics/image.cpp
     src/graphics/pixel.cpp
@@ -26,4 +27,5 @@ target_include_directories(core
 
 target_link_libraries(core
     PRIVATE glfw
-            glad)
+            glad
+            stb_image)

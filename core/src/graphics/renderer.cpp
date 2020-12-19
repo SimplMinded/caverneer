@@ -9,7 +9,9 @@
 #include "core/debug/assert.h"
 #include "core/debug/terminal.h"
 #include "core/graphics/color.h"
+#include "core/graphics/font.h"
 #include "core/graphics/rect.h"
+#include "core/graphics/spritesheet.h"
 #include "core/graphics/texture_region.h"
 #include "core/math/matrix.h"
 #include "core/math/point.h"
@@ -263,6 +265,9 @@ void initRenderer(const Matrix& projection)
         glGetUniformLocation(program, "u_samplers"));
     GL_ASSERT(glUniform1iv(samplersLocation, max_texture_count, samplers));
 
+    GL_ASSERT(glEnable(GL_BLEND));
+    GL_ASSERT(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+
     viewTransform = MATRIX_IDENTITY;
 
     textures[0] = 0;
@@ -351,10 +356,10 @@ void drawQuad(const Rect& rect,
     const Point p3 = viewTransform * makePoint(x2, y2);
     const Point p4 = viewTransform * makePoint(x2, y1);
 
-    const Point uv1 = makePoint(region.u1, region.v1);
-    const Point uv2 = makePoint(region.u1, region.v2);
-    const Point uv3 = makePoint(region.u2, region.v2);
-    const Point uv4 = makePoint(region.u2, region.v1);
+    const Point uv1 = makePoint(region.u1, 1 - region.v2);
+    const Point uv2 = makePoint(region.u1, 1 - region.v1);
+    const Point uv3 = makePoint(region.u2, 1 - region.v1);
+    const Point uv4 = makePoint(region.u2, 1 - region.v2);
 
     vertices[(spriteCount * 4) + 0] = Vertex{ p1, textureIndex, uv1, color };
     vertices[(spriteCount * 4) + 1] = Vertex{ p2, textureIndex, uv2, color };
@@ -377,6 +382,38 @@ void drawQuad(const Rect& rect, const Color& color)
 void drawQuad(const Rect& rect)
 {
     drawQuad(rect, COLOR_WHITE);
+}
+
+void drawText(const Point& pos,
+              float lineHeight,
+              const char* text,
+              const Spritesheet& font,
+              const Color& color)
+{
+    ASSERT(lineHeight > 0);
+    ASSERT(text != nullptr);
+    ASSERT(font.spriteWidth > 0);
+    ASSERT(font.spriteHeight > 0);
+
+    for (uint32_t i = 0; text[i] != '\0'; i++)
+    {
+        const float charWidth =
+            (float(font.spriteWidth) / float(font.spriteHeight)) * lineHeight;
+        const Rect rect = makeRect(
+            pos.x + (i * charWidth),
+            pos.y,
+            charWidth,
+            lineHeight);
+        drawQuad(rect, getSpriteFor(font, text[i]), color);
+    }
+}
+
+void drawText(const Point& pos,
+              float lineHeight,
+              const char* text,
+              const Spritesheet& font)
+{
+    drawText(pos, lineHeight, text, font, COLOR_BLACK);
 }
 
 } // namespace caverneer

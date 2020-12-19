@@ -23,6 +23,11 @@ Spritesheet makeSpritesheet(const Texture& texture,
 Spritesheet createSpritesheet(const Image& image,
                               uint32_t spriteWidth,
                               uint32_t spriteHeight);
+
+Spritesheet loadSpritesheet(const char* path,
+                            uint32_t spriteWidth,
+                            uint32_t spriteHeight);
+
 void deleteSpritesheet(Spritesheet& spritesheet);
 
 uint32_t getSpriteCount(const Spritesheet& spritesheet);
