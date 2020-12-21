@@ -19,6 +19,7 @@ add_library(core STATIC
     src/math/util.cpp
     src/math/vector.cpp
     src/util/error.cpp
+    src/util/string_view.cpp
     src/util/unreachable.cpp
     src/window.cpp)
 
