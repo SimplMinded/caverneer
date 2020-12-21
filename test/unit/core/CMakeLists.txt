@@ -9,6 +9,7 @@ add_executable(test_core
     src/math/test_point.cpp
     src/math/test_vector.cpp
     src/util/test_error.cpp
+    src/util/test_filesystem.cpp
     src/util/test_string_view.cpp)
 
 target_link_libraries(test_core

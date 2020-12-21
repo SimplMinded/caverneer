@@ -8,16 +8,25 @@
 #include <core/math/matrix.h>
 #include <core/math/point.h>
 #include <core/util/error.h>
+#include <core/util/filesystem.h>
+#include <core/util/string_view.h>
 #include <core/window.h>
 
 using namespace caverneer;
 
-int main()
+int main(int argc, char* argv[])
 {
-    const Error error = createWindow(720, 480, "Hello, text!");
-    if (isError(error))
+    const Error workingDirError = setWorkingDir(getParentDir(argv[0]));
+    if (isError(workingDirError))
     {
-        debugPrint("Window creation failed: %s", error.message);
+        debugPrint("Changing working directory failed: %s", workingDirError.message);
+        return 1;
+    }
+
+    const Error windowError = createWindow(720, 480, "Hello, text!");
+    if (isError(windowError))
+    {
+        debugPrint("Window creation failed: %s", windowError.message);
         return 1;
     }
 
